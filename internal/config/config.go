@@ -2,6 +2,8 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"os"
 	"path"
 )
@@ -54,4 +56,40 @@ func configPath() (string, error) {
 		return "", err
 	}
 	return path.Join(homeDir, configFileName), err
+}
+
+type State struct{ Config *Config }
+
+type Command struct {
+	Name string
+	Args []string
+}
+
+func HandlerLogin(s *State, cmd Command) error {
+	if len(cmd.Args) == 0 {
+		return errors.New("Login requires an username as argument")
+	}
+	err := s.Config.SetUser(cmd.Args[0])
+	if err != nil {
+		return err
+	}
+	fmt.Printf("User has been set as: '%s'", cmd.Args[0])
+	return nil
+}
+
+type Commands struct {
+	Handlers map[string](func(*State, Command) error)
+}
+
+func (c *Commands) Run(s *State, cmd Command) error {
+	handler, ok := c.Handlers[cmd.Name]
+	if !ok {
+		return errors.New("command does not exist")
+	}
+
+	return handler(s, cmd)
+}
+
+func (c *Commands) Register(name string, f func(*State, Command) error) {
+	c.Handlers[name] = f
 }

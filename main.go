@@ -13,10 +13,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	state := config.State{Config: &file}
-	commands := config.Commands{Handlers: make(map[string]func(*config.State, config.Command) error)}
+	currentState := state{Config: &file}
+	commands := commands{Handlers: make(map[string]func(*state, command) error)}
 
-	commands.Register("login", config.HandlerLogin)
+	commands.Register("login", handlerLogin)
 
 	osArgs := os.Args
 	if len(osArgs) == 1 {
@@ -25,12 +25,12 @@ func main() {
 	}
 	args := osArgs[1:]
 
-	cmd := config.Command{
+	cmd := command{
 		Name: args[0],
 		Args: args[1:],
 	}
 
-	err = commands.Run(&state, cmd)
+	err = commands.run(&currentState, cmd)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

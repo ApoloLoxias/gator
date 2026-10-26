@@ -7,7 +7,7 @@ let
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
 in {
         devShells.x86_64-linux.default = pkgs.mkShell {
-                packages = [pkgs.go_1_27 pkgs.bootdev-cli];
+                packages = [pkgs.go_1_27 pkgs.bootdev-cli pkgs.goose];
                 shellHook = "go version";
         };
 };

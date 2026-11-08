@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"gator/internal/config"
+	_ "github.com/lib/pq"
 	"log"
 	"os"
 )
